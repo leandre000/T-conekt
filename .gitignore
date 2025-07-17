@@ -1,0 +1,5 @@
+node_modules/
+# Ignore build and cache
+.next/
+out/
+.cache/
