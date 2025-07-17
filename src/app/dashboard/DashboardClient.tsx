@@ -11,7 +11,7 @@ import { Suspense } from "react";
 
 function DashboardSkeleton() {
 
-  //dashboard skeleton
+  
   return (
     <DashboardShell>
       <div className="space-y-6">
