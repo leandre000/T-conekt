@@ -10,6 +10,8 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { Suspense } from "react";
 
 function DashboardSkeleton() {
+
+  //dashboard
   return (
     <DashboardShell>
       <div className="space-y-6">
