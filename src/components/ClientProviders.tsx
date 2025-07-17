@@ -11,3 +11,5 @@ export default function ClientProviders({ children }: { children: React.ReactNod
     </SessionProvider>
   );
 } 
+
+//fixed
