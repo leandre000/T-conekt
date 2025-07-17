@@ -10,11 +10,13 @@
     "studio": "prisma studio",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
-    "prepare": "husky install",
+    "prepare": "echo skipped husky install",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
+    "@aws-sdk/client-s3": "^3.846.0",
+    "@aws-sdk/s3-request-presigner": "^3.846.0",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",

@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SessionProvider } from "next-auth/react";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
-  return (  //
+  return (  
     <SessionProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         {children}
