@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Briefcase } from "lucide-react";
 
 export function JobDetailModal({ job }: { job: any }) {
+  const [open, setOpen] = React.useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">View</Button>
       </DialogTrigger>

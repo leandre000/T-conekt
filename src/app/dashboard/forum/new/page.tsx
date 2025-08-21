@@ -26,7 +26,7 @@ export default function NewThreadPage() {
     defaultValues: { title: "", content: "", tags: "" },
   });
 
-  async function onSubmit(values) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
       const res = await fetch("/api/forum", {
@@ -35,7 +35,7 @@ export default function NewThreadPage() {
         body: JSON.stringify({
           title: values.title,
           content: values.content,
-          tags: values.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          tags: values.tags ? values.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
         }),
       });
       if (res.ok) {
@@ -47,7 +47,8 @@ export default function NewThreadPage() {
         throw new Error(data.error || "Something went wrong");
       }
     } catch (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast({ title: "Error", description: errorMessage, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

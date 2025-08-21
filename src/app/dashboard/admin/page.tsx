@@ -8,9 +8,8 @@ export default async function AdminDashboard(props: { searchParams: { tab?: stri
   const { searchParams } = props;
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") redirect("/not-authorized");
-  const params = typeof searchParams.then === 'function' ? await searchParams : searchParams;
-  const tab = params.tab === "jobs" ? "jobs" : "users";
-  const page = parseInt(params.page || "1");
+  const tab = searchParams.tab === "jobs" ? "jobs" : "users";
+  const page = parseInt(searchParams.page || "1");
   let stats = {};
   try {
     stats = {

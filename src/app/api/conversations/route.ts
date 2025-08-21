@@ -26,16 +26,18 @@ export async function GET(req: NextRequest) {
           participant1: {
             select: {
               id: true,
-              name: true,
-              image: true,
+              firstName: true,
+              lastName: true,
+              email: true,
               role: true,
             },
           },
           participant2: {
             select: {
               id: true,
-              name: true,
-              image: true,
+              firstName: true,
+              lastName: true,
+              email: true,
               role: true,
             },
           },

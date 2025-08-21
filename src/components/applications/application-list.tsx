@@ -56,7 +56,7 @@ export function ApplicationList({ applications, userRole }: ApplicationListProps
             <CardTitle>
               {userRole === "TALENT"
                 ? application.job.title
-                : `${application.talent.name} - ${application.talent.talentProfile?.title}`}
+                : `${application.talent.firstName} ${application.talent.lastName} - ${application.talent.talentProfile?.title}`}
             </CardTitle>
             <CardDescription>
               {userRole === "TALENT"
@@ -82,9 +82,9 @@ export function ApplicationList({ applications, userRole }: ApplicationListProps
               </span>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              {application.coverLetter.length > 150
+              {application.coverLetter && application.coverLetter.length > 150
                 ? `${application.coverLetter.slice(0, 150)}...`
-                : application.coverLetter}
+                : application.coverLetter || "No cover letter provided"}
             </p>
           </CardContent>
           <CardFooter>

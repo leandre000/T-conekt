@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { EventType } from "@prisma/client"
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,8 +40,9 @@ export async function POST(req: NextRequest) {
       include: {
         organizer: {
           select: {
-            name: true,
-            image: true,
+            firstName: true,
+            lastName: true,
+            email: true,
           },
         },
       },
@@ -62,12 +64,12 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || ""
 
     const where = {
-      ...(type && { type }),
+      ...(type && { type: type as EventType }),
       ...(search && {
         OR: [
-          { title: { contains: search, mode: "insensitive" } },
-          { description: { contains: search, mode: "insensitive" } },
-          { location: { contains: search, mode: "insensitive" } },
+          { title: { contains: search, mode: "insensitive" as const } },
+          { description: { contains: search, mode: "insensitive" as const } },
+          { location: { contains: search, mode: "insensitive" as const } },
         ],
       }),
       startDate: {
@@ -81,8 +83,9 @@ export async function GET(req: NextRequest) {
         include: {
           organizer: {
             select: {
-              name: true,
-              image: true,
+              firstName: true,
+              lastName: true,
+              email: true,
             },
           },
           _count: {

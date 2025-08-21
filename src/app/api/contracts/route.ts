@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { ContractStatus } from "@prisma/client"
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,21 +12,38 @@ export async function POST(req: NextRequest) {
     }
     const body = await req.json()
     const { jobId, talentId, terms, startDate, endDate, paymentAmount } = body
+    // Get hirer profile ID
+    const hirerProfile = await prisma.hirerProfile.findUnique({
+      where: { userId: session.user.id }
+    });
+    
+    if (!hirerProfile) {
+      return NextResponse.json({ error: "Hirer profile not found" }, { status: 404 });
+    }
+
     const contract = await prisma.contract.create({
       data: {
         jobId,
         talentId,
-        hirerId: session.user.id,
+        hirerId: hirerProfile.id,
         terms,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         paymentAmount,
-        status: "PENDING",
+        status: "DRAFT" as ContractStatus,
       },
       include: {
         job: { select: { title: true } },
-        talent: { select: { name: true } },
-        hirer: { select: { name: true } },
+        talent: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
+        hirer: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
       },
     })
     return NextResponse.json(contract, { status: 201 })
@@ -45,18 +63,40 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status")
     const page = parseInt(searchParams.get("page") || "1")
     const limit = parseInt(searchParams.get("limit") || "10")
+    // Get user's profile ID
+    let profileId: string | undefined;
+    if (session.user.role === "TALENT") {
+      const talentProfile = await prisma.talentProfile.findUnique({
+        where: { userId: session.user.id }
+      });
+      profileId = talentProfile?.id;
+    } else if (session.user.role === "HIRER") {
+      const hirerProfile = await prisma.hirerProfile.findUnique({
+        where: { userId: session.user.id }
+      });
+      profileId = hirerProfile?.id;
+    }
+
     const where = {
-      ...(session.user.role === "TALENT" && { talentId: session.user.id }),
-      ...(session.user.role === "HIRER" && { hirerId: session.user.id }),
-      ...(status && { status }),
+      ...(session.user.role === "TALENT" && profileId && { talentId: profileId }),
+      ...(session.user.role === "HIRER" && profileId && { hirerId: profileId }),
+      ...(status && { status: status as ContractStatus }),
     }
     const [contracts, total] = await Promise.all([
       prisma.contract.findMany({
         where,
         include: {
           job: { select: { title: true } },
-          talent: { select: { name: true } },
-          hirer: { select: { name: true } },
+          talent: { 
+            select: { 
+              user: { select: { firstName: true, lastName: true } }
+            } 
+          },
+          hirer: { 
+            select: { 
+              user: { select: { firstName: true, lastName: true } }
+            } 
+          },
         },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,

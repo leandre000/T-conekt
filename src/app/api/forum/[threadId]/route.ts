@@ -11,10 +11,10 @@ export async function GET(
     const thread = await prisma.forumThread.findUnique({
       where: { id: params.threadId },
       include: {
-        author: { select: { name: true, image: true } },
+        author: { select: { firstName: true, lastName: true, email: true } },
         replies: {
           include: {
-            author: { select: { name: true, image: true } },
+            author: { select: { firstName: true, lastName: true, email: true } },
           },
           orderBy: { createdAt: "asc" },
         },
@@ -48,7 +48,7 @@ export async function POST(
         authorId: session.user.id,
       },
       include: {
-        author: { select: { name: true, image: true } },
+        author: { select: { firstName: true, lastName: true, email: true } },
       },
     })
     return NextResponse.json(reply, { status: 201 })

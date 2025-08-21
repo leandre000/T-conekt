@@ -69,7 +69,7 @@ export function RegisterForm({ role }: { role: "TALENT" | "HIRER" }) {
         setIsLoading(false);
         return;
       }
-      toast({ title: "Account created!", description: "Welcome to TalentConnect! Redirecting...", variant: "success" });
+      toast({ title: "Account created!", description: "Welcome to TalentConnect! Redirecting...", variant: "default" });
       setShowFullLoader(true);
       setTimeout(() => {
         let redirectUrl = "/dashboard";

@@ -55,7 +55,7 @@ export default function ProfileDashboardClient() {
           <div className="mt-2 text-base text-gray-600 dark:text-gray-300">
             <b>Role:</b> {user.role}<br/>
             <b>Email:</b> {user.email}<br/>
-            <b>Username:</b> {user.name || user.username}<br/>
+            <b>Username:</b> {user.firstName} {user.lastName}<br/>
             {user.image && <img src={user.image} alt="Profile" className="w-20 h-20 rounded-full mt-2" />}
           </div>
         </div>
@@ -71,9 +71,9 @@ export default function ProfileDashboardClient() {
         text="Manage your profile information and preferences."
       />
       {user.role === "TALENT" ? (
-        <TalentProfileForm user={user} />
+        <TalentProfileForm profile={user.talentProfile} />
       ) : (
-        <HirerProfileForm user={user} />
+        <HirerProfileForm profile={user.hirerProfile} />
       )}
     </DashboardShell>
   );

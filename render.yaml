@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: talent-connect-app
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SKIP_ENV_VALIDATION
+        value: "1"
+    autoDeploy: false

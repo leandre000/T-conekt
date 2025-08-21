@@ -11,19 +11,20 @@ export async function GET(
     const review = await prisma.review.findUnique({
       where: { id: params.reviewId },
       include: {
-        hirer: {
+        reviewer: {
           select: {
-            companyName: true,
-            companyDescription: true,
-            location: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
           },
         },
-        talent: {
+        reviewed: {
           select: {
-            bio: true,
-            skills: true,
-            location: true,
-            ratePerHour: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
           },
         },
       },
@@ -58,24 +59,26 @@ export async function PATCH(
       return NextResponse.json({ error: "Review not found" }, { status: 404 })
     }
 
-    // Only the original hirer can update their review
-    if (session.user.id !== review.hirerId) {
+    // Only the original reviewer can update their review
+    if (session.user.id !== review.reviewerId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const body = await req.json()
-    const { rating, comment } = body
+    const { score, comment } = body
 
     const updatedReview = await prisma.review.update({
       where: { id: params.reviewId },
       data: {
-        rating,
+        score,
         comment,
       },
       include: {
-        hirer: {
+        reviewer: {
           select: {
-            companyName: true,
+            firstName: true,
+            lastName: true,
+            email: true,
           },
         },
       },
@@ -106,8 +109,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Review not found" }, { status: 404 })
     }
 
-    // Only the original hirer or an admin can delete a review
-    if (session.user.id !== review.hirerId && session.user.role !== "ADMIN") {
+    // Only the original reviewer or an admin can delete a review
+    if (session.user.id !== review.reviewerId && session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

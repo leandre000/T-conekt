@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const { data: session } = useSession();
   const { toast } = useToast();
   const [email, setEmail] = useState(session?.user?.email || "");
-  const [name, setName] = useState(session?.user?.name || "");
+  const [name, setName] = useState((session?.user?.firstName || "") + " " + (session?.user?.lastName || "") || "");
   const [avatar, setAvatar] = useState<string | null>(session?.user?.image || null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [deleting, setDeleting] = useState(false);

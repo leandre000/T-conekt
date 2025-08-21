@@ -56,8 +56,9 @@ export async function POST(req: NextRequest) {
       include: {
         sender: {
           select: {
-            name: true,
-            image: true,
+            firstName: true,
+            lastName: true,
+            email: true,
           },
         },
       },
@@ -116,8 +117,9 @@ export async function GET(req: NextRequest) {
         include: {
           sender: {
             select: {
-              name: true,
-              image: true,
+              firstName: true,
+              lastName: true,
+              email: true,
             },
           },
         },

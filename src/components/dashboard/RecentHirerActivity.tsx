@@ -43,7 +43,7 @@ export async function RecentHirerActivity({ userId }: RecentHirerActivityProps) 
           <ul className="space-y-2">
             {recentEvents.map((event, i) => (
               <li key={i} className="flex justify-between items-center">
-                <span>{event.name}</span>
+                <span>{event.title}</span>
                 <span className="text-xs text-gray-400">{event.startDate.toLocaleDateString()}</span>
               </li>
             ))}

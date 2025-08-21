@@ -80,7 +80,7 @@ export function TalentProfileForm({ profile }: TalentProfileFormProps) {
       experience: profile?.experience || "",
       education: profile?.education || "",
       hourlyRate: profile?.hourlyRate?.toString() || "",
-      availability: profile?.availability || "FULL_TIME",
+      availability: (profile?.availability as "FULL_TIME" | "PART_TIME" | "CONTRACT") || "FULL_TIME",
     },
   })
 

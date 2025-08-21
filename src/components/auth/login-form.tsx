@@ -35,7 +35,7 @@ export function LoginForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(values) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
       const result = await signIn("credentials", {
@@ -48,7 +48,7 @@ export function LoginForm() {
         setIsLoading(false);
         return;
       }
-      toast({ title: "Success", description: "You are now logged in! Redirecting...", variant: "success" });
+      toast({ title: "Success", description: "You are now logged in! Redirecting..." });
       // Wait for session to update, then fetch role and redirect accordingly
       setTimeout(async () => {
         const session = await getSession();

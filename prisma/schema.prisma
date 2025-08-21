@@ -28,14 +28,15 @@ enum ApplicationStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  role      UserRole
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  firstName         String
+  lastName          String
+  role              UserRole
+  stripeCustomerId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Profile relations
   talentProfile TalentProfile?
@@ -53,8 +54,20 @@ model User {
   reviewsReceived Review[] @relation("Reviewed")
 
   // Message relations
-  messagesSent     Message[] @relation("Sender")
-  messagesReceived Message[] @relation("Receiver")
+  messagesSent     Message[] @relation("MessageSender")
+  // Conversation relations
+  conversationsAsParticipant1 Conversation[] @relation("ConversationParticipant1")
+  conversationsAsParticipant2 Conversation[] @relation("ConversationParticipant2")
+  // Event relations
+  organizedEvents Event[] @relation("EventOrganizer")
+  eventParticipations EventParticipant[] @relation("EventParticipant")
+  // Forum relations
+  forumThreads ForumThread[] @relation("ForumThreadAuthor")
+  forumReplies ForumReply[] @relation("ForumReplyAuthor")
+  // Subscription relations
+  subscriptions Subscription[]
+  // Notification relations
+  notifications Notification[]
 
   @@map("users")
 }
@@ -92,11 +105,16 @@ model Session {
 model TalentProfile {
   id           String   @id @default(cuid())
   userId       String   @unique
+  title        String?
   bio          String?  @db.Text
   skills       String[]
+  experience   String?  @db.Text
+  education    String?  @db.Text
   location     String?
   ratePerHour  Float?
+  hourlyRate   Float?
   availability String?
+  avatarUrl    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -104,6 +122,7 @@ model TalentProfile {
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   portfolio    PortfolioItem[]
   applications Application[]
+  contracts    Contract[]
 
   @@map("talent_profiles")
 }
@@ -112,16 +131,20 @@ model HirerProfile {
   id          String   @id @default(cuid())
   userId      String   @unique
   companyName String?
+  companySize String?
   industry    String?
   location    String?
   description String?  @db.Text
+  website     String?
   websiteUrl  String?
+  avatarUrl   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobPostings JobPosting[]
+  contracts   Contract[]
 
   @@map("hirer_profiles")
 }
@@ -158,6 +181,7 @@ model JobPosting {
   // Relations
   hirer        HirerProfile  @relation(fields: [hirerId], references: [id], onDelete: Cascade)
   applications Application[]
+  contracts   Contract[]
 
   @@map("job_postings")
 }
@@ -180,6 +204,167 @@ model Application {
   @@map("applications")
 }
 
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  TERMINATED
+}
+
+model Contract {
+  id             String         @id @default(cuid())
+  jobId          String
+  talentId       String
+  hirerId        String
+  status         ContractStatus @default(DRAFT)
+  terms          String?        @db.Text
+  startDate      DateTime?
+  endDate        DateTime?
+  paymentAmount  Float?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  job    JobPosting    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  talent TalentProfile @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  hirer  HirerProfile @relation(fields: [hirerId], references: [id], onDelete: Cascade)
+
+  @@map("contracts")
+}
+
+enum EventType {
+  WORKSHOP
+  CONFERENCE
+  NETWORKING
+  HACKATHON
+  WEBINAR
+  MEETUP
+}
+
+model Event {
+  id                   String    @id @default(cuid())
+  title                String
+  description          String    @db.Text
+  startDate            DateTime
+  endDate              DateTime
+  location             String?
+  type                 EventType
+  maxParticipants      Int?
+  registrationDeadline DateTime?
+  price                Float?
+  organizerId          String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  organizer    User              @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  participants EventParticipant[]
+
+  @@map("events")
+}
+
+model EventParticipant {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  status    String   @default("REGISTERED") // REGISTERED, ATTENDED, CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation("EventParticipant", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("event_participants")
+}
+
+model ForumThread {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  authorId  String
+  category  String   @default("GENERAL")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author  User         @relation("ForumThreadAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  replies ForumReply[]
+
+  @@map("forum_threads")
+}
+
+model ForumReply {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  threadId  String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  thread ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author User        @relation("ForumReplyAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("forum_replies")
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  planId    String
+  status    SubscriptionStatus @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  duration    Int      // in days
+  features    String[] // array of feature strings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
 model Review {
   id         String   @id @default(cuid())
   reviewerId String
@@ -196,18 +381,33 @@ model Review {
   @@map("reviews")
 }
 
-model Message {
-  id         String   @id @default(cuid())
-  senderId   String
-  receiverId String
-  content    String   @db.Text
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model Conversation {
+  id              String   @id @default(cuid())
+  participant1Id  String
+  participant2Id  String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
-  sender   User @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver User @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  participant1 User @relation("ConversationParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User @relation("ConversationParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String        @db.Text
+  read           Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender      User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }

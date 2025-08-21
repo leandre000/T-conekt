@@ -27,8 +27,9 @@ export async function GET(
             deadline: true,
             hirer: {
               select: {
+                id: true,
                 companyName: true,
-                companyDescription: true,
+                description: true,
                 location: true,
               },
             },
@@ -40,7 +41,7 @@ export async function GET(
             skills: true,
             location: true,
             ratePerHour: true,
-            portfolioItems: true,
+            portfolio: true,
           },
         },
       },
@@ -97,13 +98,12 @@ export async function PATCH(
     }
 
     const body = await req.json()
-    const { status, feedback } = body
+    const { status } = body
 
     const updatedApplication = await prisma.application.update({
       where: { id: params.applicationId },
       data: {
         status,
-        feedback,
       },
       include: {
         job: {

@@ -27,7 +27,7 @@ export function AppHeaderClient() {
               <Link href="/auth/register" className={`px-5 py-2 rounded-lg font-semibold text-base bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 ${pathname === "/auth/register" ? "ring-2 ring-primary" : ""}`}>Sign Up</Link>
             </>
           ) : (
-            <Link href="/dashboard" className={`px-5 py-2 rounded-lg font-semibold text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary ${pathname.startsWith("/dashboard") ? "bg-primary/10 text-primary shadow-md" : "text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary"}`}>Dashboard</Link>
+            <Link href="/dashboard" className={`px-5 py-2 rounded-lg font-semibold text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary ${pathname?.startsWith("/dashboard") ? "bg-primary/10 text-primary shadow-md" : "text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary"}`}>Dashboard</Link>
           )}
           <ThemeToggle />
         </div>
@@ -41,4 +41,4 @@ export function AppHeaderClient() {
       </nav>
     </header>
   );
-} 
+}

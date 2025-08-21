@@ -25,9 +25,7 @@ export default async function NotificationsPage(props: { searchParams: { page?: 
   const { searchParams } = props;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/login");
-  // Await searchParams if it's a promise (per Next.js docs)
-  const params = typeof searchParams.then === 'function' ? await searchParams : searchParams;
-  const page = parseInt(params.page || "1");
+  const page = parseInt(searchParams.page || "1");
   const { notifications, total, totalPages } = await fetchNotifications(page);
   return (
     <DashboardShell>

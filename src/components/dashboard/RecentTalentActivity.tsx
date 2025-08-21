@@ -15,7 +15,7 @@ export async function RecentTalentActivity({ userId }: RecentTalentActivityProps
   });
   // Fetch recent events
   const recentEvents = await prisma.event.findMany({
-    where: { participants: { some: { id: userId } } },
+    where: { participants: { some: { userId: userId } } },
     orderBy: { startDate: "desc" },
     take: 3,
   });
@@ -44,7 +44,7 @@ export async function RecentTalentActivity({ userId }: RecentTalentActivityProps
           <ul className="space-y-2">
             {recentEvents.map((event, i) => (
               <li key={i} className="flex justify-between items-center">
-                <span>{event.name}</span>
+                <span>{event.title}</span>
                 <span className="text-xs text-gray-400">{event.startDate.toLocaleDateString()}</span>
               </li>
             ))}

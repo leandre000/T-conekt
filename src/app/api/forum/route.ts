@@ -5,12 +5,12 @@ import { authOptions } from "@/lib/auth"
 
 export async function POST(req: NextRequest) {
   try {
-    let session = null;
-    try {
-      session = await getServerSession(authOptions);
-    } catch {}
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await req.json();
-    const { title, content, tags } = body;
+    const { title, content, category } = body;
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required." }, { status: 400 });
     }
@@ -18,12 +18,12 @@ export async function POST(req: NextRequest) {
       data: {
         title,
         content,
-        tags,
-        authorId: session?.user?.id || null,
+        category: category || "GENERAL",
+        authorId: session.user.id,
       },
       include: {
         author: {
-          select: { name: true, image: true },
+          select: { firstName: true, lastName: true, email: true },
         },
       },
     });
@@ -37,16 +37,16 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const tag = searchParams.get("tag")
+    const category = searchParams.get("category")
     const page = parseInt(searchParams.get("page") || "1")
     const limit = parseInt(searchParams.get("limit") || "10")
     const search = searchParams.get("search") || ""
     const where = {
-      ...(tag && { tags: { has: tag } }),
+      ...(category && { category }),
       ...(search && {
         OR: [
-          { title: { contains: search, mode: "insensitive" } },
-          { content: { contains: search, mode: "insensitive" } },
+          { title: { contains: search, mode: "insensitive" as const } },
+          { content: { contains: search, mode: "insensitive" as const } },
         ],
       }),
     }
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       prisma.forumThread.findMany({
         where,
         include: {
-          author: { select: { name: true, image: true } },
+          author: { select: { firstName: true, lastName: true, email: true } },
           _count: { select: { replies: true } },
         },
         orderBy: { createdAt: "desc" },

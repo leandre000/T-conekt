@@ -56,7 +56,7 @@ export function EventList({ events = [] }: EventListProps) {
               <span className="text-sm text-muted-foreground">Location: <span className="font-semibold text-primary group-hover:text-indigo-600 transition-colors duration-300">{event.location}</span></span>
               <span className="text-sm text-muted-foreground">Start: <span className="font-semibold">{new Date(event.startDate).toLocaleDateString()}</span></span>
               <span className="text-sm text-muted-foreground">End: <span className="font-semibold">{new Date(event.endDate).toLocaleDateString()}</span></span>
-              <span className="text-sm text-muted-foreground">Organizer: <span className="font-semibold">{event.organizer?.name || '-'}</span></span>
+              <span className="text-sm text-muted-foreground">Organizer: <span className="font-semibold">{event.organizer?.firstName} {event.organizer?.lastName || '-'}</span></span>
               <span className="text-sm text-muted-foreground">Participants: <span className="font-semibold">{event.participants.length}</span></span>
             </div>
           </CardContent>

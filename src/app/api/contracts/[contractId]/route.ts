@@ -16,17 +16,31 @@ export async function GET(
       where: { id: params.contractId },
       include: {
         job: { select: { title: true } },
-        talent: { select: { name: true } },
-        hirer: { select: { name: true } },
+        talent: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
+        hirer: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
       },
     })
     if (!contract) {
       return NextResponse.json({ error: "Contract not found" }, { status: 404 })
     }
-    if (
-      contract.talentId !== session.user.id &&
-      contract.hirerId !== session.user.id &&
-      session.user.role !== "ADMIN"
+    
+    // Get user's profile IDs for comparison
+    const userProfile = session.user.role === "TALENT" 
+      ? await prisma.talentProfile.findUnique({ where: { userId: session.user.id } })
+      : await prisma.hirerProfile.findUnique({ where: { userId: session.user.id } });
+    
+        if (
+      session.user.role !== "ADMIN" &&
+      ((session.user.role === "TALENT" && contract.talentId !== userProfile?.id) ||
+       (session.user.role === "HIRER" && contract.hirerId !== userProfile?.id))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -52,10 +66,15 @@ export async function PATCH(
     if (!contract) {
       return NextResponse.json({ error: "Contract not found" }, { status: 404 })
     }
+    // Get user's profile IDs for comparison
+    const userProfile = session.user.role === "TALENT" 
+      ? await prisma.talentProfile.findUnique({ where: { userId: session.user.id } })
+      : await prisma.hirerProfile.findUnique({ where: { userId: session.user.id } });
+    
     if (
-      contract.talentId !== session.user.id &&
-      contract.hirerId !== session.user.id &&
-      session.user.role !== "ADMIN"
+      session.user.role !== "ADMIN" &&
+      ((session.user.role === "TALENT" && contract.talentId !== userProfile?.id) ||
+       (session.user.role === "HIRER" && contract.hirerId !== userProfile?.id))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -72,8 +91,16 @@ export async function PATCH(
       },
       include: {
         job: { select: { title: true } },
-        talent: { select: { name: true } },
-        hirer: { select: { name: true } },
+        talent: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
+        hirer: { 
+          select: { 
+            user: { select: { firstName: true, lastName: true } }
+          } 
+        },
       },
     })
     return NextResponse.json(updatedContract)
@@ -98,10 +125,15 @@ export async function DELETE(
     if (!contract) {
       return NextResponse.json({ error: "Contract not found" }, { status: 404 })
     }
+    // Get user's profile IDs for comparison
+    const userProfile = session.user.role === "TALENT" 
+      ? await prisma.talentProfile.findUnique({ where: { userId: session.user.id } })
+      : await prisma.hirerProfile.findUnique({ where: { userId: session.user.id } });
+    
     if (
-      contract.talentId !== session.user.id &&
-      contract.hirerId !== session.user.id &&
-      session.user.role !== "ADMIN"
+      session.user.role !== "ADMIN" &&
+      ((session.user.role === "TALENT" && contract.talentId !== userProfile?.id) ||
+       (session.user.role === "HIRER" && contract.hirerId !== userProfile?.id))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

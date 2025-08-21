@@ -11,43 +11,45 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { talentId, rating, comment } = body
+    const { reviewedId, score, comment } = body
 
-    // Check if talent exists
-    const talent = await prisma.talentProfile.findUnique({
-      where: { userId: talentId },
+    // Check if reviewed user exists
+    const reviewedUser = await prisma.user.findUnique({
+      where: { id: reviewedId },
     })
 
-    if (!talent) {
-      return NextResponse.json({ error: "Talent not found" }, { status: 404 })
+    if (!reviewedUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    // Check if hirer has already reviewed this talent
+    // Check if reviewer has already reviewed this user
     const existingReview = await prisma.review.findFirst({
       where: {
-        talentId,
-        hirerId: session.user.id,
+        reviewerId: session.user.id,
+        reviewedId,
       },
     })
 
     if (existingReview) {
       return NextResponse.json(
-        { error: "You have already reviewed this talent" },
+        { error: "You have already reviewed this user" },
         { status: 400 }
       )
     }
 
     const review = await prisma.review.create({
       data: {
-        talentId,
-        hirerId: session.user.id,
-        rating,
+        reviewerId: session.user.id,
+        reviewedId,
+        score,
         comment,
       },
       include: {
-        hirer: {
+        reviewer: {
           select: {
-            companyName: true,
+            firstName: true,
+            lastName: true,
+            email: true,
           },
         },
       },
@@ -63,46 +65,46 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const talentId = searchParams.get("talentId")
+    const reviewedId = searchParams.get("reviewedId")
     const page = parseInt(searchParams.get("page") || "1")
     const limit = parseInt(searchParams.get("limit") || "10")
 
-    if (!talentId) {
+    if (!reviewedId) {
       return NextResponse.json(
-        { error: "Talent ID is required" },
+        { error: "Reviewed user ID is required" },
         { status: 400 }
       )
     }
 
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
-        where: { talentId },
+        where: { reviewedId },
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          hirer: {
+          reviewer: {
             select: {
-              companyName: true,
-              companyDescription: true,
-              location: true,
+              firstName: true,
+              lastName: true,
+              email: true,
             },
           },
         },
         orderBy: { createdAt: "desc" },
       }),
-      prisma.review.count({ where: { talentId } }),
+      prisma.review.count({ where: { reviewedId } }),
     ])
 
-    // Calculate average rating
-    const averageRating =
-      reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+    // Calculate average score
+    const averageScore =
+      reviews.reduce((acc, review) => acc + review.score, 0) / reviews.length
 
     return NextResponse.json({
       reviews,
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      averageRating: isNaN(averageRating) ? 0 : averageRating,
+      averageScore: isNaN(averageScore) ? 0 : averageScore,
     })
   } catch (error) {
     console.error("Error fetching reviews:", error)

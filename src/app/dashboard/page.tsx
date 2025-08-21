@@ -32,8 +32,8 @@ export default async function DashboardPage() {
       stats = {
         applications: await prisma.application.count({ where: { talentId: user.id } }),
         jobs: await prisma.jobPosting.count({ where: { hirerId: user.id } }),
-        messages: await prisma.message.count({ OR: [ { senderId: user.id }, { receiverId: user.id } ] }),
-        events: await prisma.event.count({ participants: { some: { id: user.id } } }),
+        messages: await prisma.message.count({ where: { senderId: user.id } }),
+        events: await prisma.event.count({ where: { participants: { some: { userId: user.id } } } }),
       };
     }
   } catch (e) {

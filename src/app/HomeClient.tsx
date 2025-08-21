@@ -121,7 +121,7 @@ export default function HomeClient() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-24 px-4 max-w-6xl mx-auto">
+      <section className="py-24 px-4 max-w-6xl mx-auto bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl">
         <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-14 text-gray-900 dark:text-white tracking-tight">Simple, Transparent Pricing</h2>
         <div className="flex flex-col md:flex-row gap-10 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
           {pricingPlans.map((plan, idx) => {
@@ -129,20 +129,36 @@ export default function HomeClient() {
             return (
               <div
                 key={plan.name}
-                className={`relative group rounded-2xl shadow-xl p-10 flex flex-col items-center min-w-[320px] max-w-md mx-auto transition-all duration-300 bg-white/90 dark:bg-neutral-800 border-2 border-transparent hover:border-primary/40 hover:scale-105 hover:shadow-2xl cursor-pointer ${plan.featured ? "bg-primary text-white border-primary scale-105" : ""}`}
-                style={{ boxShadow: plan.featured ? "0 0 32px 8px rgba(99,102,241,0.25)" : undefined }}
+                className={`relative group rounded-2xl shadow-xl p-10 flex flex-col items-center min-w-[320px] max-w-md mx-auto transition-all duration-300 border-2 border-transparent hover:border-primary/40 hover:scale-105 hover:shadow-2xl cursor-pointer ${
+                  plan.featured 
+                    ? "bg-gradient-to-br from-blue-600 to-purple-700 text-white border-blue-500 scale-105" 
+                    : "bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 text-gray-900 dark:text-white"
+                }`}
+                style={{ 
+                  boxShadow: plan.featured 
+                    ? "0 0 32px 8px rgba(99,102,241,0.4)" 
+                    : "0 4px 20px rgba(0,0,0,0.1)" 
+                }}
               >
                 <div className="absolute inset-0 rounded-2xl pointer-events-none group-hover:shadow-glow group-hover:animate-shine transition-all duration-500" />
-                <Icon className={`h-10 w-10 mb-6 ${plan.featured ? "text-white" : "text-primary"}`} />
+                <Icon className={`h-10 w-10 mb-6 ${plan.featured ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
                 <h3 className="font-bold text-2xl mb-3">{plan.name}</h3>
-                <p className="mb-6 text-gray-600 dark:text-gray-300 group-hover:text-primary group-hover:dark:text-white transition-colors duration-300 text-lg">{plan.description}</p>
-                <span className={`text-3xl font-extrabold mb-4 ${plan.featured ? "text-white" : "text-primary"}`}>{plan.price}</span>
-                <Link href={plan.ctaLink} className={`mt-4 px-8 py-3 rounded-lg font-bold text-lg transition-all duration-300 ${plan.featured ? "bg-white text-primary hover:bg-gray-100" : "bg-primary text-white hover:bg-primary/90"} focus:outline-none focus:ring-2 focus:ring-primary shadow-lg`}>{plan.cta}</Link>
+                <p className={`mb-6 text-center transition-colors duration-300 text-lg ${
+                  plan.featured 
+                    ? "text-blue-100" 
+                    : "text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-300"
+                }`}>{plan.description}</p>
+                <span className={`text-3xl font-extrabold mb-4 ${plan.featured ? "text-white" : "text-blue-600 dark:text-blue-400"}`}>{plan.price}</span>
+                <Link href={plan.ctaLink} className={`mt-4 px-8 py-3 rounded-lg font-bold text-lg transition-all duration-300 ${
+                  plan.featured 
+                    ? "bg-white text-blue-600 hover:bg-gray-100 shadow-lg" 
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
+                } focus:outline-none focus:ring-2 focus:ring-blue-500`}>{plan.cta}</Link>
               </div>
             );
           })}
-          </div>
-        </section>
+        </div>
+      </section>
 
       {/* FAQ Section */}
       <section className="py-24 px-4 max-w-4xl mx-auto">

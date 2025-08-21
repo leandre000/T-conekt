@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { ApplicationStatus } from "@prisma/client"
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,7 +82,7 @@ export async function GET(req: NextRequest) {
       ...(session.user.role === "HIRER" && {
         job: { hirerId: session.user.id },
       }),
-      ...(status && { status }),
+      ...(status && { status: status as ApplicationStatus }),
     }
 
     const [applications, total] = await Promise.all([

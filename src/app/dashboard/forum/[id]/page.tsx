@@ -63,7 +63,7 @@ export default async function ThreadDetailPage({ params }: { params: { id: strin
     redirect(`/dashboard/forum`);
   }
 
-  const handleReply = async (e: React.FormEvent) => {
+  const handleReply = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     await addReply(formData);
@@ -79,7 +79,7 @@ export default async function ThreadDetailPage({ params }: { params: { id: strin
               <MessageCircle className="h-8 w-8 text-indigo-500 animate-bounce" />
               {thread.title}
             </h1>
-            <p className="text-lg text-gray-700 dark:text-gray-200 max-w-xl mb-4">By {thread.author?.name || "Unknown"} • {new Date(thread.createdAt).toLocaleDateString()}</p>
+            <p className="text-lg text-gray-700 dark:text-gray-200 max-w-xl mb-4">By {thread.author?.firstName} {thread.author?.lastName || "Unknown"} • {new Date(thread.createdAt).toLocaleDateString()}</p>
           </div>
           <img
             src="/images/forum-thread-hero.svg"
@@ -91,11 +91,11 @@ export default async function ThreadDetailPage({ params }: { params: { id: strin
         <div className="bg-gradient-to-br from-white via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 rounded-xl shadow-lg p-8 max-w-2xl mx-auto animate-fade-in">
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={thread.author?.image || "/images/avatar-placeholder.svg"} alt={thread.author?.name || "U"} />
-              <AvatarFallback>{thread.author?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+              <AvatarImage src={thread.author?.image || "/images/avatar-placeholder.svg"} alt={`${thread.author?.firstName} ${thread.author?.lastName}` || "U"} />
+              <AvatarFallback>{(thread.author?.firstName?.charAt(0) || thread.author?.lastName?.charAt(0) || "U").toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-semibold text-primary text-lg">{thread.author?.name || "Unknown"}</div>
+              <div className="font-semibold text-primary text-lg">{thread.author?.firstName} {thread.author?.lastName || "Unknown"}</div>
               <div className="text-xs text-gray-400">{new Date(thread.createdAt).toLocaleDateString()}</div>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default async function ThreadDetailPage({ params }: { params: { id: strin
             ) : thread.replies.map((r: any) => (
               <li key={r.id} className="bg-white dark:bg-neutral-900 rounded-lg shadow p-4 flex gap-3 items-start animate-fade-in">
                 <Avatar className="h-8 w-8 mt-1">
-                  <AvatarImage src={r.author?.image || "/images/avatar-placeholder.svg"} alt={r.author?.name || "U"} />
-                  <AvatarFallback>{r.author?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                  <AvatarImage src={r.author?.image || "/images/avatar-placeholder.svg"} alt={`${r.author?.firstName} ${r.author?.lastName}` || "U"} />
+                  <AvatarFallback>{(r.author?.firstName?.charAt(0) || r.author?.lastName?.charAt(0) || "U").toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">{r.author?.name || "Unknown"}</div>
+                  <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">{r.author?.firstName} {r.author?.lastName || "Unknown"}</div>
                   <div className="text-xs text-gray-400 mb-1">{new Date(r.createdAt).toLocaleString()}</div>
                   <div className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{r.content}</div>
                 </div>

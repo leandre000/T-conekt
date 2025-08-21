@@ -46,7 +46,7 @@ export default function MessagesDashboardClient() {
     if (!session?.user?.id) return;
     // Check if conversation already exists
     const existing = conversations.find((conv: any) =>
-      conv.participants.some((p: any) => p.id === user.id)
+      conv.participants.some((p: any) => p.id === session.user.id)
     );
     if (existing) {
       setActiveConversation(existing);

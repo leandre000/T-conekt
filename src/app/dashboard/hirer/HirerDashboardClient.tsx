@@ -38,7 +38,7 @@ export default function HirerDashboardClient({ user, stats, userId }: { user: an
       {/* Hero Section */}
       <div className="flex flex-col md:flex-row items-center justify-between bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 rounded-2xl shadow-lg p-8 mb-8 animate-fade-in">
         <div className="flex-1 mb-6 md:mb-0">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-2 drop-shadow-sm">Welcome, {user.name || "Hirer"}!</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-2 drop-shadow-sm">Welcome, {user.firstName} {user.lastName}!</h1>
           <p className="text-lg text-gray-700 dark:text-gray-200 max-w-xl mb-4">Start posting jobs, reviewing applications, and connecting with top talent. Build your dream team today!</p>
         </div>
         <img

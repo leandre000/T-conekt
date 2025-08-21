@@ -28,9 +28,8 @@ export default async function ForumPage(props: { searchParams: { page?: string; 
   const { searchParams } = props;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/login");
-  const params = typeof searchParams.then === 'function' ? await searchParams : searchParams;
-  const page = parseInt(params.page || "1");
-  const search = params.search || "";
+  const page = parseInt(searchParams.page || "1");
+  const search = searchParams.search || "";
   const { threads, total, totalPages } = await fetchThreads(page, search);
   return (
     <DashboardShell>
@@ -72,13 +71,13 @@ export default async function ForumPage(props: { searchParams: { page?: string; 
           <li key={t.id} className="group bg-gradient-to-br from-white via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 rounded-xl shadow-lg p-6 flex flex-col gap-2 hover:scale-105 hover:shadow-2xl transition-all duration-300 focus-within:ring-2 focus-within:ring-primary">
             <div className="flex items-center gap-3 mb-1">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={t.author?.image || "/images/avatar-placeholder.svg"} alt={t.author?.name || "U"} />
-                <AvatarFallback>{t.author?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                <AvatarImage src={t.author?.image || "/images/avatar-placeholder.svg"} alt={`${t.author?.firstName} ${t.author?.lastName}` || "U"} />
+                <AvatarFallback>{(t.author?.firstName?.charAt(0) || t.author?.lastName?.charAt(0) || "U").toUpperCase()}</AvatarFallback>
               </Avatar>
               <Link href={`/dashboard/forum/${t.id}`} className="font-semibold text-primary hover:underline text-lg flex-1 line-clamp-1">{t.title}</Link>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-400">
-              <span>By {t.author?.name || "Unknown"}</span>
+              <span>By {t.author?.firstName} {t.author?.lastName || "Unknown"}</span>
               <span>• {new Date(t.createdAt).toLocaleDateString()}</span>
               <span>• <MessageCircle className="inline h-4 w-4 text-indigo-500 mr-1" />{t._count.replies} replies</span>
             </div>

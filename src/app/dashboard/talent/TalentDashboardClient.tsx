@@ -57,7 +57,7 @@ export default function TalentDashboardClient({ user, stats, userId }: { user: a
         <div className="flex-1 mb-6 md:mb-0">
           <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-2 drop-shadow-sm flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-pink-500 animate-bounce" />
-            Welcome, {user.name || "Talent"}!
+            Welcome, {user.firstName} {user.lastName}!
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-200 max-w-xl mb-4">Your dashboard gives you a quick overview of your activity, stats, and recent updates. Explore jobs, connect with others, and grow your career!</p>
         </div>

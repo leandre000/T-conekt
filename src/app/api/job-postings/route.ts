@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { JobType } from "@prisma/client"
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,16 +14,25 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { title, description, skillsRequired, budget, jobType, location, deadline } = body
 
+    // Get hirer profile ID
+    const hirerProfile = await prisma.hirerProfile.findUnique({
+      where: { userId: session.user.id }
+    });
+    
+    if (!hirerProfile) {
+      return NextResponse.json({ error: "Hirer profile not found" }, { status: 404 });
+    }
+
     const jobPosting = await prisma.jobPosting.create({
       data: {
         title,
         description,
         skillsRequired,
         budget,
-        jobType,
+        jobType: jobType as JobType,
         location,
         deadline: deadline ? new Date(deadline) : null,
-        hirerId: session.user.id,
+        hirerId: hirerProfile.id,
       },
     })
 
@@ -47,7 +57,7 @@ export async function GET(req: NextRequest) {
     const where = {
       ...(skills && { skillsRequired: { hasSome: skills } }),
       ...(location && { location }),
-      ...(jobType && { jobType }),
+      ...(jobType && { jobType: jobType as JobType }),
       ...(minBudget && { budget: { gte: parseFloat(minBudget) } }),
       ...(maxBudget && { budget: { lte: parseFloat(maxBudget) } }),
     }

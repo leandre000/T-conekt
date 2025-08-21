@@ -5,7 +5,7 @@ export function Form({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export function FormField({ name, control, render }: { name: string; control: any; render: (props: any) => React.ReactNode }) {
+export function FormField({ name, control, render }: { name: string; control: any; render: (props: any) => React.ReactElement }) {
   return (
     <Controller
       name={name}

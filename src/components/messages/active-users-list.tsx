@@ -13,7 +13,9 @@ export function ActiveUsersList({ onStartConversation, currentUserId }: { onStar
       setActiveUsers(users.filter(u => u.id !== currentUserId));
       setLoading(false);
     });
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+    };
   }, [currentUserId]);
 
   if (loading) {
@@ -29,10 +31,10 @@ export function ActiveUsersList({ onStartConversation, currentUserId }: { onStar
         {activeUsers.map((user) => (
           <li key={user.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 rounded p-2 transition" onClick={() => onStartConversation(user)}>
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.image || ""} alt={user.name || "U"} />
-              <AvatarFallback>{user.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+              <AvatarImage src={user.image || ""} alt={`${user.firstName} ${user.lastName}` || "U"} />
+              <AvatarFallback>{(user.firstName?.charAt(0) || user.lastName?.charAt(0) || "U").toUpperCase()}</AvatarFallback>
             </Avatar>
-            <span className="font-medium text-gray-900 dark:text-white">{user.name || "User"}</span>
+                          <span className="font-medium text-gray-900 dark:text-white">{user.firstName} {user.lastName || "User"}</span>
           </li>
         ))}
       </ul>

@@ -35,7 +35,7 @@ export default function DashboardClient({ user, stats }: { user: any, stats: any
         {/* Dashboard Hero Section */}
         <div className="flex flex-col md:flex-row items-center justify-between bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 rounded-2xl shadow-lg p-8 mb-8 animate-fade-in">
           <div className="flex-1 mb-6 md:mb-0">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-2 drop-shadow-sm">Welcome back, {user.name || "User"}!</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-2 drop-shadow-sm">Welcome back, {user.firstName} {user.lastName}!</h1>
             <p className="text-lg text-gray-700 dark:text-gray-200 max-w-xl mb-4">Your dashboard gives you a quick overview of your activity, stats, and recent updates. Explore jobs, connect with others, and grow your career!</p>
           </div>
           <img
@@ -46,7 +46,7 @@ export default function DashboardClient({ user, stats }: { user: any, stats: any
           />
         </div>
         <DashboardHeader
-          heading={`Welcome back, ${user.name || "User"}!`}
+          heading={`Welcome back, ${user.firstName} ${user.lastName}!`}
           text="Here's an overview of your activity."
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -3,7 +3,7 @@ import { EventParticipationChartClient } from "./EventParticipationChartClient";
 
 export async function EventParticipationChart({ userId }: { userId: string }) {
   const events = await prisma.event.findMany({
-    where: { participants: { some: { id: userId } } },
+    where: { participants: { some: { userId: userId } } },
     select: { startDate: true },
   });
   // Group by month

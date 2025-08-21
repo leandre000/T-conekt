@@ -26,8 +26,8 @@ export default async function TalentDashboardPage() {
     stats = {
       applications: await prisma.application.count({ where: { talentId: user.id } }),
       jobs: await prisma.jobPosting.count({}),
-      messages: await prisma.message.count({ OR: [ { senderId: user.id }, { receiverId: user.id } ] }),
-      events: await prisma.event.count({ participants: { some: { id: user.id } } }),
+      messages: await prisma.message.count({ where: { senderId: user.id } }),
+      events: await prisma.event.count({ where: { participants: { some: { userId: user.id } } } }),
     };
   } catch (e) {
     return <div className="text-red-500">Failed to load stats. Please try again later.</div>;

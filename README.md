@@ -138,3 +138,7 @@ You can log in as an admin using the following credentials (for local developmen
   ```
 
 Add this user to your database with the role `ADMIN` to access the admin dashboard at `/dashboard/admin`.
+
+## 🚀 Deployment
+
+For deployment instructions to Vercel and Render, see [DEPLOYMENT.md](./DEPLOYMENT.md).
